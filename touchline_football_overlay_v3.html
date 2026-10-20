@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Touchline — Football Broadcast Graphics</title>
+<link rel="stylesheet" href="touchline_football_overlay_v3.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><div class="mark">T</div><div><h1>TOUCHLINE <span style="color:var(--cyan)">GRAPHICS</span></h1><div class="sub">Football broadcast overlay controller</div></div></div>
+    <div class="pill">OBS READY · v1.0</div>
+  </header>
+  <div class="layout">
+    <section class="panel">
+      <h2>Match control</h2>
+      <div class="fields">
+        <div class="field"><label for="home">Home team</label><input id="home" value="HOME TEAM" maxlength="26"></div>
+        <div class="field"><label for="away">Away team</label><input id="away" value="AWAY TEAM" maxlength="26"></div>
+        <div class="field"><label for="homeShort">Home short name</label><input id="homeShort" value="HOM" maxlength="4"></div>
+        <div class="field"><label for="awayShort">Away short name</label><input id="awayShort" value="AWY" maxlength="4"></div>
+        <div class="field"><label for="homeLogo">Home team logo</label><input id="homeLogo" type="file" accept="image/*"></div>
+        <div class="field"><label for="awayLogo">Away team logo</label><input id="awayLogo" type="file" accept="image/*"></div>
+        <div class="field"><label for="homeKit">Home shirt color</label><input id="homeKit" type="color" value="#c92f42"></div>
+        <div class="field"><label for="awayKit">Away shirt color</label><input id="awayKit" type="color" value="#2454a6"></div>
+        <div class="field"><label for="homeScore">Home score</label><input id="homeScore" type="number" min="0" max="99" value="0"></div>
+        <div class="field"><label for="awayScore">Away score</label><input id="awayScore" type="number" min="0" max="99" value="0"></div>
+        <div class="field"><label for="period">Half / phase</label><select id="period"><option>1ST HALF</option><option>HALF TIME</option><option>2ND HALF</option><option>EXTRA TIME 1</option><option>EXTRA TIME 2</option><option>PENALTIES</option><option>FULL TIME</option></select></div>
+        <div class="field"><label for="minute">Match clock</label><input id="minute" value="00:00" maxlength="8" placeholder="45:00"></div>
+        <div class="field"><label for="added">Added time (+min)</label><select id="added"><option value="">None</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+      </div>
+      <div class="section">
+        <div class="section-title">LIVE MATCH TIMER</div>
+        <div class="fields">
+          <div class="field"><label for="halfLength">Half length (minutes)</label><select id="halfLength"><option value="45">45 minutes</option><option value="40">40 minutes</option><option value="35">35 minutes</option><option value="30">30 minutes</option></select></div>
+          <div class="field"><label for="startAt">Starting display</label><input id="startAt" value="00:00" maxlength="8" placeholder="00:00"></div>
+        </div>
+        <div class="actions">
+          <button id="timerStart">▶ Start timer</button>
+          <button class="secondary" id="timerPause">Ⅱ Pause</button>
+          <button class="secondary" id="timerReset">↺ Reset timer</button>
+        </div>
+        <div class="hint">The timer runs in the browser source while the page is open. It is a match clock, not a real-world wall clock.</div>
+      </div>
+      <div class="actions">
+        <button id="apply">Update scoreboard</button>
+        <button class="secondary" id="homePlus">Home +1</button>
+        <button class="secondary" id="awayPlus">Away +1</button>
+        <button class="secondary" id="resetScore">Reset score</button>
+      </div>
+      <div class="section">
+        <div class="section-title">LOWER THIRDS & EVENTS</div>
+        <div class="fields">
+          <div class="field"><label for="player">Player / headline</label><input id="player" value="PLAYER NAME"></div>
+          <div class="field"><label for="number">Shirt number</label><input id="number" value="10" maxlength="3"></div>
+          <div class="field full"><label for="detail">Subtitle / team / detail</label><input id="detail" value="HOME TEAM  ·  FORWARD"></div>
+        </div>
+        <div class="actions">
+          <button id="playerBtn">Player ID</button>
+          <button class="gold" id="goalBtn">GOAL! Home</button><button class="gold" id="awayGoalBtn">GOAL! Away</button><button class="secondary" id="yellowBtn">Yellow card</button><button class="danger" id="redBtn">Red card</button><button class="secondary" id="subBtn">Substitution</button>
+          <button class="secondary" id="walkoutBtn">Team walkout</button>
+          <button class="secondary" id="lineupBtn">Starting XI</button>
+          <button class="secondary" id="halfBtn">Half-time</button>
+          <button class="secondary" id="fullBtn">Full-time</button>
+          <button class="secondary" id="toggleScore">Hide scoreboard</button>
+          <button class="secondary" id="toggleLower">Hide lower third</button>
+          <button class="secondary" id="toggleEvent">Hide event banner</button>
+          <button class="secondary" id="hideBtn">Hide graphics</button>
+        </div>
+        <div class="hint">Fill in player, shirt number and detail first (for a substitution: player ON, detail "OFF: name"). GOAL! Home/Away adds 1 to that team’s score. The scoreboard stays on screen while these show.</div>
+      </div>
+      <div class="section">
+        <div class="section-title">LOOK & OUTPUT</div>
+        <div class="fields">
+          <div class="field"><label for="accent">Accent colour</label><select id="accent"><option value="#4de1e8">Broadcast cyan</option><option value="#ffd166">Gold</option><option value="#65e58f">Pitch green</option><option value="#ff4e61">Red</option><option value="#8b9cff">Electric blue</option></select></div>
+          <div class="field"><label for="displayMode">Preview graphic</label><select id="displayMode"><option value="score">Scoreboard</option><option value="player">Player lower third</option><option value="goal">Goal graphic</option><option value="yellow">Yellow card</option><option value="red">Red card</option><option value="sub">Substitution</option><option value="walkout">Team walkout</option><option value="lineup">Starting XI</option><option value="half">Half-time</option><option value="full">Full-time</option><option value="none">Hidden</option></select></div>
+          <div class="field"><label for="bg">OBS background</label><select id="bg"><option value="transparent">Transparent (no key)</option><option value="green">Chroma green</option><option value="blue">Chroma blue</option><option value="magenta">Magenta</option><option value="black">Black</option></select></div>
+        </div>
+        <div class="actions">
+          <button class="secondary" id="showScore">Show scoreboard</button>
+          <button class="secondary" id="copyUrl">Copy OBS URL</button>
+          <button class="secondary" id="helpBtn">OBS setup</button>
+        </div>
+        <div class="hint" id="obsHelp" hidden><strong>OBS setup:</strong> run <code>touchline_server.py</code> (keep it open). Browser source URL: <code>http://localhost:8080/?overlay=1&amp;bg=transparent</code>, 1920×1080, untick “Shutdown source when not visible”. Control from <code>http://localhost:8080/</code> in any browser or an OBS custom dock. For chroma use bg=green or blue and add a Chroma Key filter.</div>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Live preview <span style="color:var(--cyan)">/ 16:9</span></h2>
+      <div class="preview-wrap">
+        <div class="preview-head"><span>PROGRAM GRAPHICS</span><span>1920 × 1080 DESIGN</span></div>
+        <div class="preview" id="preview">
+          <div class="field-lines"></div><div class="sample-note">TOUCHLINE SPORTS · LIVE MATCH</div>
+          <div class="event-strip" id="eventStrip">STARTING XI</div>
+          <div class="walkout-graphic" id="walkoutGraphic" aria-hidden="true">
+            <div class="walkout-team home"><div class="walkout-players"><i></i><i></i><i></i><i></i><i></i></div><strong id="walkoutHome">HOME TEAM</strong></div>
+            <div class="walkout-center"><span>PRE-MATCH</span><strong>TEAM WALKOUT</strong><small>ENTERING THE PITCH</small></div>
+            <div class="walkout-team away"><div class="walkout-players"><i></i><i></i><i></i><i></i><i></i></div><strong id="walkoutAway">AWAY TEAM</strong></div>
+          </div>
+          <div class="overlay" id="scoreGraphic">
+            <div class="score-main">
+              <div class="team"><div class="crest" id="homeCrest">HOM</div><div class="team-name" id="homeDisplay">HOME TEAM</div></div>
+              <div class="score"><span id="homeScoreDisplay">0</span><span class="dash">–</span><span id="awayScoreDisplay">0</span></div>
+              <div class="team away"><div class="team-name" id="awayDisplay">AWAY TEAM</div><div class="crest" id="awayCrest">AWY</div></div>
+            </div>
+            <div class="clock"><small id="periodDisplay">1ST HALF</small><strong id="clockDisplay">00:00</strong></div>
+            <div class="status-tag" id="statusTag">LIVE</div>
+          </div>
+          <div class="lowerthird" id="lowerThird">
+            <div class="lt-accent"></div><div class="lt-body"><div class="eyebrow" id="ltEyebrow">PLAYER PROFILE</div><div class="lt-title" id="ltTitle">PLAYER NAME</div><div class="lt-sub" id="ltSub">HOME TEAM · FORWARD</div></div><div class="lt-number" id="ltNumber">10</div>
+          </div>
+        </div>
+        <div class="preview-foot"><span><strong>TRANSPARENT OVERLAY</strong> · Background is preview-only</span><span>16:9</span></div>
+      </div>
+      <div class="section">
+        <div class="section-title">QUICK OPERATOR KEYS</div>
+        <div class="hint"><span class="key">1</span> Scoreboard <span class="key">2</span> Player ID <span class="key">3</span> Goal <span class="key">4</span> Starting XI <span class="key">5</span> Half-time <span class="key">6</span> Full-time <span class="key">7</span> Yellow <span class="key">8</span> Red <span class="key">9</span> Sub <span class="key">0</span> Hide</div>
+        <div class="hint">This first version uses placeholder team crests made from short names. Replace names and scores from the control panel. Team logos and automatic live match data can be added later.</div>
+      </div>
+    </section>
+  </div>
+  <div class="footer">TOUCHLINE GRAPHICS · Independent sample overlay for OBS Studio. No team or league branding included. Save a copy before editing.</div>
+</div>
+<div id="obs-stage">
+  <div class="overlay" id="obsScoreGraphic">
+    <div class="score-main">
+      <div class="team"><div class="crest" id="obsHomeCrest">HOM</div><div class="team-name" id="obsHomeDisplay">HOME TEAM</div></div>
+      <div class="score"><span id="obsHomeScoreDisplay">0</span><span class="dash">–</span><span id="obsAwayScoreDisplay">0</span></div>
+      <div class="team away"><div class="team-name" id="obsAwayDisplay">AWAY TEAM</div><div class="crest" id="obsAwayCrest">AWY</div></div>
+    </div>
+    <div class="clock"><small id="obsPeriodDisplay">1ST HALF</small><strong id="obsClockDisplay">00:00</strong></div>
+    <div class="status-tag" id="obsStatusTag">LIVE</div>
+  </div>
+  <div class="lowerthird" id="obsLowerThird">
+    <div class="lt-accent"></div><div class="lt-body"><div class="eyebrow" id="obsLtEyebrow">PLAYER PROFILE</div><div class="lt-title" id="obsLtTitle">PLAYER NAME</div><div class="lt-sub" id="obsLtSub">HOME TEAM · FORWARD</div></div><div class="lt-number" id="obsLtNumber">10</div>
+  </div>
+  <div class="event-strip" id="obsEventStrip">STARTING XI</div>
+  <div class="walkout-graphic" id="obsWalkoutGraphic" aria-hidden="true">
+    <div class="walkout-team home"><div class="walkout-players"><i></i><i></i><i></i><i></i><i></i></div><strong id="obsWalkoutHome">HOME TEAM</strong></div>
+    <div class="walkout-center"><span>PRE-MATCH</span><strong>TEAM WALKOUT</strong><small>ENTERING THE PITCH</small></div>
+    <div class="walkout-team away"><div class="walkout-players"><i></i><i></i><i></i><i></i><i></i></div><strong id="obsWalkoutAway">AWAY TEAM</strong></div>
+  </div>
+</div>
+<div class="toast" id="toast">Updated</div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const ids = ['home','away','homeShort','awayShort','homeKit','awayKit','homeScore','awayScore','period','minute','player','number','detail','accent','displayMode','halfLength','startAt','added','bg'];
+  const state = { mode:'score', status:'LIVE', eyebrow:'PLAYER PROFILE', title:'PLAYER NAME', subtitle:'HOME TEAM · FORWARD', number:'10', event:'', running:false, elapsed:0, startedAt:0, homeLogo:'', awayLogo:'', visibility:{score:true,lower:true,event:true} };
+  let timerHandle = null; let goalSide='home';
+  const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('touchline') : null;
+  const qs = new URLSearchParams(location.search);
+  const isOverlay = qs.get('overlay') === '1' || location.hash === '#overlay';
+  if (isOverlay) {document.body.classList.add('overlay-mode');document.documentElement.classList.add('overlay-mode');}
+
+  function readForm(){
+    return {
+      home:$('home').value.trim() || 'HOME TEAM', away:$('away').value.trim() || 'AWAY TEAM',
+      homeShort:$('homeShort').value.trim().slice(0,4).toUpperCase() || 'HOM',
+      awayShort:$('awayShort').value.trim().slice(0,4).toUpperCase() || 'AWY',
+      homeKit:$('homeKit').value, awayKit:$('awayKit').value,
+      homeScore:Math.max(0,Number($('homeScore').value)||0), awayScore:Math.max(0,Number($('awayScore').value)||0),
+      period:$('period').value, minute:$('minute').value.trim() || '00:00',
+      homeLogo:state.homeLogo||'', awayLogo:state.awayLogo||'',
+      player:$('player').value.trim() || 'PLAYER NAME', number:$('number').value.trim() || '10',
+      detail:$('detail').value.trim(), accent:$('accent').value, added:$('added').value, bg:$('bg').value
+    };
+  }
+  function paint(){
+    const s=readForm();
+    document.documentElement.style.setProperty('--cyan',s.accent);
+    const BG={transparent:'transparent',green:'#00b140',blue:'#0047bb',magenta:'#ff00ff',black:'#000000'};
+    const bgc=BG[(isOverlay&&qs.get('bg'))||s.bg]||'transparent';
+    document.documentElement.style.setProperty('--stage-bg',isOverlay?bgc:'transparent');
+    document.documentElement.classList.toggle('chroma',isOverlay&&bgc!=='transparent');
+    $('preview').style.background=(!isOverlay&&bgc!=='transparent')?bgc:'';
+    ['','obs'].forEach(prefix=>{
+      const elementId=id=>prefix ? prefix+id : id[0].toLowerCase()+id.slice(1);
+      const set=(id,val)=>{const el=$(elementId(id)); if(el)el.textContent=val;};
+      set('HomeCrest',s.homeShort);set('AwayCrest',s.awayShort);
+      const hc=$(elementId('HomeCrest')), ac=$(elementId('AwayCrest'));
+      if(hc)hc.innerHTML=s.homeLogo ? '<img alt="" src="'+s.homeLogo+'">' : s.homeShort;
+      if(ac)ac.innerHTML=s.awayLogo ? '<img alt="" src="'+s.awayLogo+'">' : s.awayShort;
+      const luminance=color=>{
+        const channels=color.match(/[0-9a-f]{2}/gi).map(value=>parseInt(value,16)/255).map(value=>value<=0.04045?value/12.92:((value+0.055)/1.055)**2.4);
+        return 0.2126*channels[0]+0.7152*channels[1]+0.0722*channels[2];
+      };
+      const homeTeam=hc?.closest('.team'), awayTeam=ac?.closest('.team');
+      const homeText=$(elementId('HomeDisplay')), awayText=$(elementId('AwayDisplay'));
+      if(homeTeam)homeTeam.style.backgroundColor=s.homeKit;
+      if(awayTeam)awayTeam.style.backgroundColor=s.awayKit;
+      if(homeText)homeText.style.color=luminance(s.homeKit)>0.179?'#17243a':'#ffffff';
+      if(awayText)awayText.style.color=luminance(s.awayKit)>0.179?'#17243a':'#ffffff';
+      const walkoutHome=$(elementId('WalkoutHome')), walkoutAway=$(elementId('WalkoutAway'));
+      const homeWalkoutPanel=walkoutHome?.closest('.walkout-team'), awayWalkoutPanel=walkoutAway?.closest('.walkout-team');
+      set('WalkoutHome',s.home);set('WalkoutAway',s.away);
+      if(homeWalkoutPanel){homeWalkoutPanel.style.color=s.homeKit;walkoutHome.style.color=luminance(s.homeKit)>0.179?'#17243a':'#ffffff';}
+      if(awayWalkoutPanel){awayWalkoutPanel.style.color=s.awayKit;walkoutAway.style.color=luminance(s.awayKit)>0.179?'#17243a':'#ffffff';}
+      set('HomeDisplay',s.home);set('AwayDisplay',s.away);
+      set('HomeScoreDisplay',s.homeScore);set('AwayScoreDisplay',s.awayScore);
+      set('PeriodDisplay',s.period+(s.added?'  +'+s.added+"'":''));set('ClockDisplay',s.minute);
+      set('StatusTag',state.status);
+      set('LtEyebrow',state.eyebrow);set('LtTitle',state.title);set('LtSub',state.subtitle);set('LtNumber',state.number);
+      const score=$(elementId('ScoreGraphic')), lower=$(elementId('LowerThird')), strip=$(elementId('EventStrip'));
+      const walkout=$(elementId('WalkoutGraphic'));
+      if(score)score.classList.toggle('hidden',state.mode==='none'||state.visibility?.score===false);
+      if(lower)lower.classList.toggle('show',state.visibility?.lower!==false&&['player','goal','yellow','red','sub'].includes(state.mode));
+      if(lower){lower.classList.toggle('yellow',state.mode==='yellow');lower.classList.toggle('red',state.mode==='red');lower.classList.toggle('sub',state.mode==='sub');}
+      if(lower)lower.classList.toggle('goal',state.mode==='goal');
+      if(strip){strip.textContent=state.event;strip.classList.toggle('show',state.visibility?.event!==false&&['lineup','half','full'].includes(state.mode));}
+      if(walkout)walkout.classList.toggle('show',state.mode==='walkout');
+    });
+    $('toggleScore').textContent=state.visibility?.score===false?'Show scoreboard':'Hide scoreboard';
+    $('toggleLower').textContent=state.visibility?.lower===false?'Show lower third':'Hide lower third';
+    $('toggleEvent').textContent=state.visibility?.event===false?'Show event banner':'Hide event banner';
+    $('displayMode').value=state.mode;
+    if(!isOverlay)try{localStorage.setItem('touchline-state',JSON.stringify({ids:ids.reduce((a,id)=>(a[id]=$(id).value,a),{}),state}));}catch(e){}
+    if(!isOverlay)try{const msg={type:'touchline-update',values:ids.reduce((a,id)=>(a[id]=$(id).value,a),{}),state}; const out={...msg,stamp:Date.now()};if(bc)bc.postMessage(out);if(location.protocol!=='file:')fetch('/api/state',{method:'POST',body:JSON.stringify(out)}).catch(()=>{});localStorage.setItem('touchline-sync',JSON.stringify(out));}catch(e){}
+  }
+  function mode(mode){
+    state.mode=mode;
+    state.visibility={score:mode!=='none',lower:mode!=='none',event:mode!=='none'};
+    const s=readForm();
+    if(mode==='player'){state.status='LIVE';state.eyebrow='PLAYER PROFILE';state.title=s.player;state.subtitle=s.detail;state.number=s.number;state.event='';}
+    if(mode==='goal'){state.status='GOAL';state.eyebrow='GOAL';state.title=s.player==='PLAYER NAME'?'GOAL!':s.player;state.subtitle=(s.detail||(goalSide==='away'?s.away:s.home))+'  ·  '+s.minute;state.number=s.number;state.event='';}
+    if(mode==='yellow'||mode==='red'){state.status=mode==='red'?'RED CARD':'YELLOW CARD';state.eyebrow=state.status;state.title=s.player;state.subtitle=(s.detail||'')+'  ·  '+s.minute;state.number=s.number;state.event='';}
+    if(mode==='sub'){state.status='SUBSTITUTION';state.eyebrow='SUBSTITUTION';state.title=s.player;state.subtitle=s.detail;state.number=s.number;state.event='';}
+    if(mode==='walkout'){state.status='PRE-MATCH';state.event='';}
+    if(mode==='lineup'){state.status='LINE-UP';state.event='STARTING XI  ·  '+s.home.toUpperCase()+' VS '+s.away.toUpperCase();}
+    if(mode==='half'){state.status='BREAK';state.event='HALF-TIME  ·  '+s.homeScore+' – '+s.awayScore;}
+    if(mode==='full'){state.status='FULL-TIME';state.event='FULL-TIME  ·  '+s.homeScore+' – '+s.awayScore;}
+    if(mode==='score'){state.status='LIVE';state.event='';}
+    if(mode==='none'){state.status='';state.event='';}
+    paint();
+  }
+  function toast(message){const t=$('toast');t.textContent=message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700);}
+  $('apply').onclick=()=>{paint();toast('Scoreboard updated');};
+  $('homePlus').onclick=()=>{$('homeScore').value=(Number($('homeScore').value)||0)+1;paint();toast('Home score +1');};
+  $('awayPlus').onclick=()=>{$('awayScore').value=(Number($('awayScore').value)||0)+1;paint();toast('Away score +1');};
+  $('resetScore').onclick=()=>{$('homeScore').value=0;$('awayScore').value=0;paint();toast('Score reset');};
+  $('playerBtn').onclick=()=>mode('player');
+  $('awayGoalBtn').onclick=()=>{goalSide='away';$('awayScore').value=(Number($('awayScore').value)||0)+1;mode('goal');toast('Away goal on air');};
+  $('goalBtn').onclick=()=>{ goalSide='home';$('homeScore').value=(Number($('homeScore').value)||0)+1;mode('goal');toast('Goal graphic on air'); };
+  $('lineupBtn').onclick=()=>mode('lineup');
+  $('walkoutBtn').onclick=()=>mode('walkout');
+  $('halfBtn').onclick=()=>mode('half');
+  $('fullBtn').onclick=()=>mode('full');
+  $('hideBtn').onclick=()=>mode('none');
+  $('toggleScore').onclick=()=>{state.visibility.score=state.visibility.score===false;paint();};
+  $('toggleLower').onclick=()=>{state.visibility.lower=state.visibility.lower===false;paint();};
+  $('toggleEvent').onclick=()=>{state.visibility.event=state.visibility.event===false;paint();};
+  $('yellowBtn').onclick=()=>mode('yellow');$('redBtn').onclick=()=>mode('red');$('subBtn').onclick=()=>mode('sub');
+  $('showScore').onclick=()=>mode('score');
+  $('displayMode').onchange=e=>mode(e.target.value);
+  $('accent').onchange=paint;
+  $('copyUrl').onclick=async()=>{
+    const url=location.href.split('#')[0].split('?')[0]+'?overlay=1&bg='+$('bg').value;
+    try{await navigator.clipboard.writeText(url);toast('OBS overlay URL copied');}
+    catch(e){prompt('Copy this overlay URL (serve this HTML locally or host it first):',url);}
+  };
+  $('helpBtn').onclick=()=>{$('obsHelp').hidden=!$('obsHelp').hidden;};
+  ids.forEach(id=>$(id).addEventListener('change',()=>{paint();}));
+  document.addEventListener('keydown',e=>{
+    if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;
+    const map={'1':'score','2':'player','3':'goal','4':'lineup','5':'half','6':'full','7':'yellow','8':'red','9':'sub','0':'none'};
+    if(map[e.key])mode(map[e.key]);
+  });
+  function formatClock(totalSeconds){
+    const mins=Math.floor(totalSeconds/60), secs=totalSeconds%60;
+    return String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+  }
+  function updateTimer(){
+    if(state.running) state.elapsed=Math.floor((Date.now()-state.startedAt)/1000);
+    const txt=formatClock(state.elapsed);
+    if($('minute').value!==txt){$('minute').value=txt;paint();}
+  }
+  $('timerStart').onclick=()=>{
+    if(!state.running){state.startedAt=Date.now()-state.elapsed*1000;state.running=true;}
+    if(timerHandle)clearInterval(timerHandle);
+    timerHandle=setInterval(updateTimer,250);updateTimer();paint();toast('Match timer running');
+  };
+  $('timerPause').onclick=()=>{
+    if(state.running){state.elapsed=Math.floor((Date.now()-state.startedAt)/1000);state.running=false;}
+    if(timerHandle)clearInterval(timerHandle);timerHandle=null;updateTimer();paint();toast('Match timer paused');
+  };
+  $('timerReset').onclick=()=>{
+    state.running=false;state.elapsed=0;state.startedAt=Date.now();
+    if(timerHandle)clearInterval(timerHandle);timerHandle=null;
+    $('minute').value='00:00';paint();toast('Match timer reset');
+  };
+  $('startAt').addEventListener('change',()=>{
+    const parts=$('startAt').value.split(':').map(Number);
+    state.elapsed=parts.length===2 && parts.every(Number.isFinite) ? Math.max(0,parts[0]*60+parts[1]) : 0;
+    $('minute').value=formatClock(state.elapsed);paint();
+  });
+  function loadLogo(inputId, which){
+    $(inputId).addEventListener('change',event=>{
+      const file=event.target.files && event.target.files[0]; if(!file)return;
+      if(!file.type.startsWith('image/')){toast('Please choose an image file');return;}
+      const reader=new FileReader();
+      reader.onload=()=>{state[which]=reader.result;paint();toast((which==='homeLogo'?'Home':'Away')+' logo loaded');};
+      reader.readAsDataURL(file);
+    });
+  }
+  $('period').addEventListener('change',()=>{
+    const h=(Number($('halfLength').value)||45)*60, map={'1ST HALF':0,'2ND HALF':h,'EXTRA TIME 1':2*h,'EXTRA TIME 2':2*h+900}, p=$('period').value;
+    if(p in map){state.elapsed=map[p];state.startedAt=Date.now()-state.elapsed*1000;$('minute').value=formatClock(state.elapsed);paint();}
+  });
+  loadLogo('homeLogo','homeLogo');loadLogo('awayLogo','awayLogo');
+
+  // Keep the OBS browser source in sync with the operator page using same-origin local storage.
+  let lastStamp=0;
+  function ensureTick(){
+    if(state.running&&!timerHandle)timerHandle=setInterval(updateTimer,250);
+    if(!state.running&&timerHandle){clearInterval(timerHandle);timerHandle=null;}
+  }
+  function applyRemote(data){
+    if(!isOverlay||!data||data.type!=='touchline-update'||!(data.stamp>lastStamp))return;
+    lastStamp=data.stamp;
+    Object.entries(data.values||{}).forEach(([id,value])=>{if($(id))$(id).value=value;});
+    Object.assign(state,data.state||{});
+    if(state.running){state.elapsed=Math.floor((Date.now()-state.startedAt)/1000);$('minute').value=formatClock(state.elapsed);}
+    paint();ensureTick();
+  }
+  // Three channels so OBS gets updates whichever one its browser supports; the overlay then runs its own clock.
+  window.addEventListener('storage',e=>{if(e.key==='touchline-sync'&&e.newValue){try{applyRemote(JSON.parse(e.newValue));}catch(err){}}});
+  if(bc)bc.onmessage=e=>applyRemote(e.data);
+  if(isOverlay&&location.protocol!=='file:')setInterval(()=>fetch('/api/state',{cache:'no-store'}).then(r=>r.json()).then(applyRemote).catch(()=>{}),300);
+  if(isOverlay)setInterval(()=>{try{const v=localStorage.getItem('touchline-sync');if(v)applyRemote(JSON.parse(v));}catch(err){}},300);
+  // Restore last settings for the operator page; OBS overlay reads the shared values too.
+  try{
+    const saved=JSON.parse(localStorage.getItem('touchline-state')||'null');
+    if(saved&&saved.ids)Object.entries(saved.ids).forEach(([id,value])=>{if($(id))$(id).value=value;});
+    if(saved&&saved.state)Object.assign(state,saved.state);
+  }catch(e){}
+  if(!isOverlay)state.running=false;
+  function fitStage(){if(!isOverlay)return;$('obs-stage').style.transform='scale('+Math.min(innerWidth/1920,innerHeight/1080)+')';}
+  window.addEventListener('resize',fitStage);fitStage();
+  paint();
+  ensureTick();
+})();
+</script>
+</body>
+</html>
