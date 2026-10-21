@@ -3,62 +3,78 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Touchline — Football Broadcast Graphics</title>
+<title>Touchline Studio — Football Broadcast Graphics</title>
 <link rel="stylesheet" href="touchline_football_overlay_v3.css">
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="brand"><div class="mark">T</div><div><h1>TOUCHLINE <span style="color:var(--cyan)">GRAPHICS</span></h1><div class="sub">Football broadcast overlay controller</div></div></div>
-    <div class="pill">OBS READY · v1.0</div>
+    <div class="brand"><div class="mark">T</div><div><h1>TOUCHLINE <span style="color:var(--cyan)">STUDIO</span></h1><div class="sub">Football broadcast graphics · Matchday control</div></div></div>
+    <div class="pill">BROADCAST CONTROL</div>
   </header>
+  <section class="getting-started" aria-labelledby="gettingStartedTitle">
+    <div class="getting-started-heading">
+      <span class="guide-kicker">NEW TO TOUCHLINE?</span>
+      <h2 id="gettingStartedTitle">Get match-ready in 3 steps</h2>
+      <p>Changes appear in the live preview as you work.</p>
+    </div>
+    <ol class="guide-steps">
+      <li><span>1</span><div><strong>Set up the match</strong><small>Enter both teams, then set the score and match time.</small></div></li>
+      <li><span>2</span><div><strong>Choose a graphic</strong><small>Show the scoreboard, a goal, a player ID, or another event.</small></div></li>
+      <li><span>3</span><div><strong>Send it to OBS</strong><small>Open OBS setup below and add the copied link as a Browser Source.</small></div></li>
+    </ol>
+  </section>
   <div class="layout">
     <section class="panel">
       <h2>Match control</h2>
+      <p class="panel-intro">Set up the teams and match details. Your changes update the live preview automatically.</p>
       <div class="fields">
         <div class="field"><label for="home">Home team</label><input id="home" value="HOME TEAM" maxlength="26"></div>
         <div class="field"><label for="away">Away team</label><input id="away" value="AWAY TEAM" maxlength="26"></div>
-        <div class="field"><label for="homeShort">Home short name</label><input id="homeShort" value="HOM" maxlength="4"></div>
-        <div class="field"><label for="awayShort">Away short name</label><input id="awayShort" value="AWY" maxlength="4"></div>
-        <div class="field"><label for="homeLogo">Home team logo</label><input id="homeLogo" type="file" accept="image/*"></div>
-        <div class="field"><label for="awayLogo">Away team logo</label><input id="awayLogo" type="file" accept="image/*"></div>
+        <div class="field"><label for="homeShort">Home scoreboard abbreviation</label><input id="homeShort" value="HOM" maxlength="4"></div>
+        <div class="field"><label for="awayShort">Away scoreboard abbreviation</label><input id="awayShort" value="AWY" maxlength="4"></div>
+        <div class="field"><label for="homeLogo">Home logo (optional)</label><input id="homeLogo" type="file" accept="image/*"></div>
+        <div class="field"><label for="awayLogo">Away logo (optional)</label><input id="awayLogo" type="file" accept="image/*"></div>
         <div class="field"><label for="homeKit">Home shirt color</label><input id="homeKit" type="color" value="#c92f42"></div>
         <div class="field"><label for="awayKit">Away shirt color</label><input id="awayKit" type="color" value="#2454a6"></div>
         <div class="field"><label for="homeScore">Home score</label><input id="homeScore" type="number" min="0" max="99" value="0"></div>
         <div class="field"><label for="awayScore">Away score</label><input id="awayScore" type="number" min="0" max="99" value="0"></div>
-        <div class="field"><label for="period">Half / phase</label><select id="period"><option>1ST HALF</option><option>HALF TIME</option><option>2ND HALF</option><option>EXTRA TIME 1</option><option>EXTRA TIME 2</option><option>PENALTIES</option><option>FULL TIME</option></select></div>
-        <div class="field"><label for="minute">Match clock</label><input id="minute" value="00:00" maxlength="8" placeholder="45:00"></div>
-        <div class="field"><label for="added">Added time (+min)</label><select id="added"><option value="">None</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+        <div class="field"><label for="period">Half / match phase</label><select id="period"><option>1ST HALF</option><option>HALF TIME</option><option>2ND HALF</option><option>EXTRA TIME 1</option><option>EXTRA TIME 2</option><option>PENALTIES</option><option>FULL TIME</option></select></div>
+        <div class="field"><label for="minute">Match clock (mm:ss)</label><input id="minute" value="00:00" maxlength="8" placeholder="45:00"></div>
+        <div class="field"><label for="added">Added minutes</label><select id="added"><option value="">None</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
       </div>
       <div class="section">
-        <div class="section-title">LIVE MATCH TIMER</div>
+        <div class="section-title">MATCH TIMER</div>
+        <p class="section-intro">Choose a starting time, then use Start, Pause, or Reset to control the on-screen match clock.</p>
         <div class="fields">
-          <div class="field"><label for="halfLength">Half length (minutes)</label><select id="halfLength"><option value="45">45 minutes</option><option value="40">40 minutes</option><option value="35">35 minutes</option><option value="30">30 minutes</option></select></div>
-          <div class="field"><label for="startAt">Starting display</label><input id="startAt" value="00:00" maxlength="8" placeholder="00:00"></div>
+          <div class="field"><label for="halfLength">Half length</label><select id="halfLength"><option value="45">45 minutes</option><option value="40">40 minutes</option><option value="35">35 minutes</option><option value="30">30 minutes</option></select></div>
+          <div class="field"><label for="startAt">Start clock at (mm:ss)</label><input id="startAt" value="00:00" maxlength="8" placeholder="00:00"></div>
         </div>
         <div class="actions">
           <button id="timerStart">▶ Start timer</button>
           <button class="secondary" id="timerPause">Ⅱ Pause</button>
           <button class="secondary" id="timerReset">↺ Reset timer</button>
         </div>
-        <div class="hint">The timer runs in the browser source while the page is open. It is a match clock, not a real-world wall clock.</div>
+        <div class="hint">The match clock runs while this page is open. It is not tied to your computer’s real-world clock.</div>
       </div>
       <div class="actions">
         <button id="apply">Update scoreboard</button>
-        <button class="secondary" id="homePlus">Home +1</button>
-        <button class="secondary" id="awayPlus">Away +1</button>
-        <button class="secondary" id="resetScore">Reset score</button>
+        <button class="secondary" id="homePlus">Home score +1</button>
+        <button class="secondary" id="awayPlus">Away score +1</button>
+        <button class="secondary" id="resetScore">Reset both scores</button>
       </div>
+      <p class="hint">Use +1 after a goal, or type a score directly. The goal graphics below also add one to the selected team.</p>
       <div class="section">
-        <div class="section-title">LOWER THIRDS & EVENTS</div>
+        <div class="section-title">PLAYER & MATCH GRAPHICS</div>
+        <p class="section-intro">Fill in these details first, then choose a graphic. For a substitution, enter the player coming on and write “OFF: player name” in the detail.</p>
         <div class="fields">
-          <div class="field"><label for="player">Player / headline</label><input id="player" value="PLAYER NAME"></div>
-          <div class="field"><label for="number">Shirt number</label><input id="number" value="10" maxlength="3"></div>
-          <div class="field full"><label for="detail">Subtitle / team / detail</label><input id="detail" value="HOME TEAM  ·  FORWARD"></div>
+          <div class="field"><label for="player">Player name / headline</label><input id="player" value="PLAYER NAME"></div>
+          <div class="field"><label for="number">Shirt number (optional)</label><input id="number" value="10" maxlength="3"></div>
+          <div class="field full"><label for="detail">Team, position, or event detail</label><input id="detail" value="HOME TEAM  ·  FORWARD"></div>
         </div>
         <div class="actions">
           <button id="playerBtn">Player ID</button>
-          <button class="gold" id="goalBtn">GOAL! Home</button><button class="gold" id="awayGoalBtn">GOAL! Away</button><button class="secondary" id="yellowBtn">Yellow card</button><button class="danger" id="redBtn">Red card</button><button class="secondary" id="subBtn">Substitution</button>
+          <button class="gold" id="goalBtn">Home goal (+1)</button><button class="gold" id="awayGoalBtn">Away goal (+1)</button><button class="secondary" id="yellowBtn">Yellow card</button><button class="danger" id="redBtn">Red card</button><button class="secondary" id="subBtn">Substitution</button>
           <button class="secondary" id="walkoutBtn">Team walkout</button>
           <button class="secondary" id="lineupBtn">Starting XI</button>
           <button class="secondary" id="halfBtn">Half-time</button>
@@ -68,25 +84,36 @@
           <button class="secondary" id="toggleEvent">Hide event banner</button>
           <button class="secondary" id="hideBtn">Hide graphics</button>
         </div>
-        <div class="hint">Fill in player, shirt number and detail first (for a substitution: player ON, detail "OFF: name"). GOAL! Home/Away adds 1 to that team’s score. The scoreboard stays on screen while these show.</div>
+        <div class="hint">Goal buttons add 1 to that team and show the goal graphic. Event graphics appear with the scoreboard; use the visibility buttons to hide individual items.</div>
       </div>
       <div class="section">
-        <div class="section-title">LOOK & OUTPUT</div>
+        <div class="section-title">APPEARANCE & OBS OUTPUT</div>
         <div class="fields">
-          <div class="field"><label for="accent">Accent colour</label><select id="accent"><option value="#4de1e8">Broadcast cyan</option><option value="#ffd166">Gold</option><option value="#65e58f">Pitch green</option><option value="#ff4e61">Red</option><option value="#8b9cff">Electric blue</option></select></div>
-          <div class="field"><label for="displayMode">Preview graphic</label><select id="displayMode"><option value="score">Scoreboard</option><option value="player">Player lower third</option><option value="goal">Goal graphic</option><option value="yellow">Yellow card</option><option value="red">Red card</option><option value="sub">Substitution</option><option value="walkout">Team walkout</option><option value="lineup">Starting XI</option><option value="half">Half-time</option><option value="full">Full-time</option><option value="none">Hidden</option></select></div>
-          <div class="field"><label for="bg">OBS background</label><select id="bg"><option value="transparent">Transparent (no key)</option><option value="green">Chroma green</option><option value="blue">Chroma blue</option><option value="magenta">Magenta</option><option value="black">Black</option></select></div>
+          <div class="field"><label for="accent">Graphic accent colour</label><select id="accent"><option value="#4de1e8">Broadcast cyan</option><option value="#ffd166">Gold</option><option value="#65e58f">Pitch green</option><option value="#ff4e61">Red</option><option value="#8b9cff">Electric blue</option></select></div>
+          <div class="field"><label for="displayMode">Show this graphic</label><select id="displayMode"><option value="score">Scoreboard</option><option value="player">Player lower third</option><option value="goal">Goal graphic</option><option value="yellow">Yellow card</option><option value="red">Red card</option><option value="sub">Substitution</option><option value="walkout">Team walkout</option><option value="lineup">Starting XI</option><option value="half">Half-time</option><option value="full">Full-time</option><option value="none">Hide graphics</option></select></div>
+          <div class="field"><label for="bg">Overlay background</label><select id="bg"><option value="transparent">Transparent (recommended)</option><option value="green">Chroma green</option><option value="blue">Chroma blue</option><option value="magenta">Magenta</option><option value="black">Black</option></select></div>
         </div>
+        <p class="hint">Transparent is recommended for OBS. Use a colored background only if you plan to add a Chroma Key filter.</p>
         <div class="actions">
           <button class="secondary" id="showScore">Show scoreboard</button>
-          <button class="secondary" id="copyUrl">Copy OBS URL</button>
-          <button class="secondary" id="helpBtn">OBS setup</button>
+          <button class="secondary" id="copyUrl">Copy OBS link</button>
+          <button class="secondary" id="helpBtn" aria-expanded="false" aria-controls="obsHelp">OBS setup guide</button>
         </div>
-        <div class="hint" id="obsHelp" hidden><strong>OBS setup:</strong> run <code>touchline_server.py</code> (keep it open). Browser source URL: <code>http://localhost:8080/?overlay=1&amp;bg=transparent</code>, 1920×1080, untick “Shutdown source when not visible”. Control from <code>http://localhost:8080/</code> in any browser or an OBS custom dock. For chroma use bg=green or blue and add a Chroma Key filter.</div>
+        <div class="obs-help" id="obsHelp" hidden>
+          <strong>Add the graphics to OBS</strong>
+          <ol>
+            <li>In a terminal opened in the project folder, run <code>python3 touchline_server.py</code>. Leave the terminal open.</li>
+            <li>In OBS, add a <strong>Browser Source</strong> to your scene.</li>
+            <li>Click <strong>Copy OBS link</strong>, then paste the link into the source URL.</li>
+            <li>Set the source size to <strong>1920 × 1080</strong>. Keep the background transparent.</li>
+          </ol>
+          <p>Keep this control page open while you operate the match. Choose green or blue only if you want to use an OBS Chroma Key filter.</p>
+        </div>
       </div>
     </section>
     <section class="panel">
-      <h2>Live preview <span style="color:var(--cyan)">/ 16:9</span></h2>
+      <h2>Live output preview <span style="color:var(--cyan)">/ 16:9</span></h2>
+      <p class="panel-intro">This shows what viewers will see. Test your graphics here before sending the Browser Source live.</p>
       <div class="preview-wrap">
         <div class="preview-head"><span>PROGRAM GRAPHICS</span><span>1920 × 1080 DESIGN</span></div>
         <div class="preview" id="preview">
@@ -113,13 +140,13 @@
         <div class="preview-foot"><span><strong>TRANSPARENT OVERLAY</strong> · Background is preview-only</span><span>16:9</span></div>
       </div>
       <div class="section">
-        <div class="section-title">QUICK OPERATOR KEYS</div>
-        <div class="hint"><span class="key">1</span> Scoreboard <span class="key">2</span> Player ID <span class="key">3</span> Goal <span class="key">4</span> Starting XI <span class="key">5</span> Half-time <span class="key">6</span> Full-time <span class="key">7</span> Yellow <span class="key">8</span> Red <span class="key">9</span> Sub <span class="key">0</span> Hide</div>
-        <div class="hint">This first version uses placeholder team crests made from short names. Replace names and scores from the control panel. Team logos and automatic live match data can be added later.</div>
+        <div class="section-title">KEYBOARD SHORTCUTS</div>
+        <div class="hint">Click outside a text field, then press <span class="key">1</span> Scoreboard <span class="key">2</span> Player ID <span class="key">3</span> Goal <span class="key">4</span> Starting XI <span class="key">5</span> Half-time <span class="key">6</span> Full-time <span class="key">7</span> Yellow <span class="key">8</span> Red <span class="key">9</span> Sub <span class="key">0</span> Hide</div>
+        <div class="hint">Team crests use short-name placeholders. Upload team artwork and update match details from the control panel before going on air.</div>
       </div>
     </section>
   </div>
-  <div class="footer">TOUCHLINE GRAPHICS · Independent sample overlay for OBS Studio. No team or league branding included. Save a copy before editing.</div>
+  <div class="footer">TOUCHLINE STUDIO · Independent broadcast graphics for OBS Studio. No team or league affiliation.</div>
 </div>
 <div id="obs-stage">
   <div class="overlay" id="obsScoreGraphic">
@@ -258,7 +285,12 @@
     try{await navigator.clipboard.writeText(url);toast('OBS overlay URL copied');}
     catch(e){prompt('Copy this overlay URL (serve this HTML locally or host it first):',url);}
   };
-  $('helpBtn').onclick=()=>{$('obsHelp').hidden=!$('obsHelp').hidden;};
+  $('helpBtn').onclick=()=>{
+    const isHidden=$('obsHelp').hidden;
+    $('obsHelp').hidden=!isHidden;
+    $('helpBtn').setAttribute('aria-expanded',String(isHidden));
+    $('helpBtn').textContent=isHidden?'Hide OBS setup':'OBS setup guide';
+  };
   ids.forEach(id=>$(id).addEventListener('change',()=>{paint();}));
   document.addEventListener('keydown',e=>{
     if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;
