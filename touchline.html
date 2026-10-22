@@ -56,9 +56,19 @@
           <button class="gold" id="hGoal">Home goal (+1)</button><button class="gold" id="aGoal">Away goal (+1)</button>
           <button class="secondary" data-mode="yellow">Yellow card</button><button class="danger" data-mode="red">Red card</button>
           <button class="secondary" data-mode="sub">Substitution</button><button class="secondary" data-mode="walkout">Team walkout</button>
-          <button class="secondary" data-mode="lineup">Line-up banner</button><button class="secondary" data-mode="half">Half-time</button><button class="secondary" data-mode="full">Full-time</button>
+          <button class="secondary" data-mode="lineup">Starting lineups</button><button class="secondary" data-mode="half">Half-time</button><button class="secondary" data-mode="full">Full-time</button>
           <button class="secondary" data-mode="score">Clear graphic</button><button class="secondary" id="toggleScore">Hide scoreboard</button>
         </div>
+      </div>
+      <div class="section">
+        <h3>Starting lineups</h3>
+        <div class="fields">
+          <div><label for="homeFormation">Home formation</label><input id="homeFormation" maxlength="12" placeholder="4-3-3"></div>
+          <div><label for="awayFormation">Away formation</label><input id="awayFormation" maxlength="12" placeholder="4-2-3-1"></div>
+          <div><label for="homeLineup">Home starting XI</label><textarea id="homeLineup" rows="11" placeholder="1 | Goalkeeper&#10;2 | Defender"></textarea></div>
+          <div><label for="awayLineup">Away starting XI</label><textarea id="awayLineup" rows="11" placeholder="1 | Goalkeeper&#10;2 | Defender"></textarea></div>
+        </div>
+        <p class="hint">Enter one player per line. Use “shirt number | player name” (for example, “9 | Alex Morgan”); the shirt number is optional.</p>
       </div>
       <div class="section">
         <h3>Output</h3>
@@ -97,6 +107,19 @@
     <div class="wmid"><span>PRE-MATCH</span><strong>TEAM WALKOUT</strong></div>
     <div class="wteam away"><div class="wplayers"><i></i><i></i><i></i><i></i><i></i></div><strong id="wAway"></strong></div>
   </div>
+  <section class="lineup" id="lineup">
+    <header class="lineup-heading"><span>TEAM SHEET</span><strong>STARTING XI</strong></header>
+    <div class="lineup-teams">
+      <article class="lineup-team home">
+        <div class="lineup-team-heading"><span class="lineup-crest" id="lhCrest"></span><div><strong id="lhName"></strong><small id="lhFormation"></small></div></div>
+        <ol id="lhPlayers"></ol>
+      </article>
+      <article class="lineup-team away">
+        <div class="lineup-team-heading"><div><strong id="laName"></strong><small id="laFormation"></small></div><span class="lineup-crest" id="laCrest"></span></div>
+        <ol id="laPlayers"></ol>
+      </article>
+    </div>
+  </section>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -106,11 +129,11 @@ const $=id=>document.getElementById(id);
 const qs=new URLSearchParams(location.search);
 const isOverlay=qs.get('overlay')==='1', isPreview=qs.get('preview')==='1';
 document.documentElement.classList.toggle('overlay',isOverlay);
-const DEF={home:'HOME TEAM',away:'AWAY TEAM',homeShort:'HOM',awayShort:'AWY',homeKit:'#c92f42',awayKit:'#2454a6',homeScore:0,awayScore:0,period:'1ST HALF',added:'',halfLength:45,accent:'#56c9c1',bg:'transparent',team:'home',player:'',number:'',detail:'',off:'',mode:'score',min:"1'",showScore:true,clock:{running:false,base:0,anchor:0},homeLogo:'',awayLogo:'',stamp:0};
+const DEF={home:'HOME TEAM',away:'AWAY TEAM',homeShort:'HOM',awayShort:'AWY',homeKit:'#c92f42',awayKit:'#2454a6',homeScore:0,awayScore:0,period:'1ST HALF',added:'',halfLength:45,accent:'#56c9c1',bg:'transparent',team:'home',player:'',number:'',detail:'',off:'',homeFormation:'',awayFormation:'',homeLineup:'',awayLineup:'',mode:'score',min:"1'",showScore:true,clock:{running:false,base:0,anchor:0},homeLogo:'',awayLogo:'',stamp:0};
 let S=structuredClone(DEF);
 const bc='BroadcastChannel' in window?new BroadcastChannel('touchline'):null;
 const BG={transparent:'transparent',green:'#00b140',blue:'#0047bb',magenta:'#ff00ff',black:'#000000'};
-const FIELDS=['home','away','homeShort','awayShort','homeKit','awayKit','homeScore','awayScore','period','added','halfLength','accent','bg','team','player','number','detail','off'];
+const FIELDS=['home','away','homeShort','awayShort','homeKit','awayKit','homeScore','awayScore','period','added','halfLength','accent','bg','team','player','number','detail','off','homeFormation','awayFormation','homeLineup','awayLineup'];
 const NUM=['homeScore','awayScore','halfLength'];
 const elapsed=()=>{const c=S.clock;return c.running?c.base+Math.floor((Date.now()-c.anchor)/1000):c.base};
 const fmt=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
@@ -124,7 +147,7 @@ function gfx(){
     case 'goal':return {t:'lower',cls:'goal',eye:'GOAL',title:S.player||'GOAL!',sub:team+'  ·  '+S.min,num};
     case 'yellow':case 'red':return {t:'lower',cls:S.mode,eye:S.mode==='red'?'RED CARD':'YELLOW CARD',title:S.player||'PLAYER NAME',sub:who+'  ·  '+S.min,num};
     case 'sub':return {t:'lower',cls:'sub',eye:'SUBSTITUTION',title:'▲ '+(S.player||'PLAYER ON'),sub:'▼ '+(S.off||'PLAYER OFF')+'  ·  '+team,num};
-    case 'lineup':return {t:'strip',text:'STARTING XI  ·  '+S.home.toUpperCase()+' VS '+S.away.toUpperCase()};
+    case 'lineup':return {t:'lineup'};
     case 'half':return {t:'strip',text:'HALF-TIME  ·  '+S.homeScore+' – '+S.awayScore};
     case 'full':return {t:'strip',text:'FULL-TIME  ·  '+S.homeScore+' – '+S.awayScore};
     case 'walkout':return {t:'walkout'};
@@ -132,6 +155,18 @@ function gfx(){
   return {};
 }
 function crest(el,logo,short){const k=logo+'|'+short;if(el.dataset.k===k)return;el.dataset.k=k;el.replaceChildren();if(logo){const i=new Image();i.alt='';i.src=logo;el.append(i)}else el.textContent=short}
+function lineupPlayers(el,value){
+  el.replaceChildren();
+  const rows=value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+  if(!rows.length){const empty=document.createElement('li');empty.className='lineup-empty';empty.textContent='Add players in the controller';el.append(empty);return}
+  rows.forEach(row=>{
+    const match=row.match(/^(\d{1,3})\s*(?:[|,.:–—-]\s*|\s+)(.+)$/);
+    const item=document.createElement('li'),number=document.createElement('span'),name=document.createElement('span');
+    number.className='lineup-number';name.className='lineup-player';
+    number.textContent=match?match[1]:'—';name.textContent=match?match[2]:row;
+    item.append(number,name);el.append(item);
+  });
+}
 const prevScore={};
 function renderClock(){const t=fmt(elapsed());$('clock').textContent=t;if(!isOverlay&&document.activeElement!==$('clockIn'))$('clockIn').value=t}
 function render(){
@@ -141,12 +176,18 @@ function render(){
   crest($('hCrest'),S.homeLogo,S.homeShort);crest($('aCrest'),S.awayLogo,S.awayShort);
   [['hScore',S.homeScore],['aScore',S.awayScore]].forEach(([id,v])=>{const el=$(id);if(prevScore[id]!==undefined&&prevScore[id]!==v){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}prevScore[id]=v;el.textContent=v});
   $('period').textContent=S.period+(S.added?'  +'+S.added+"'":'');
+  $('lhName').textContent=S.home;$('laName').textContent=S.away;
+  $('lhFormation').textContent=S.homeFormation||'FORMATION';
+  $('laFormation').textContent=S.awayFormation||'FORMATION';
+  crest($('lhCrest'),S.homeLogo,S.homeShort);crest($('laCrest'),S.awayLogo,S.awayShort);
+  lineupPlayers($('lhPlayers'),S.homeLineup);lineupPlayers($('laPlayers'),S.awayLineup);
   $('tag').textContent={goal:'GOAL',yellow:'YELLOW CARD',red:'RED CARD',sub:'SUBSTITUTION'}[S.mode]||{'HALF TIME':'HALF TIME','FULL TIME':'FULL TIME'}[S.period]||'LIVE';
   $('bug').classList.toggle('off',!S.showScore);
   $('lower').className='lower'+(g.t==='lower'?' on '+(g.cls||''):'');
   if(g.t==='lower'){$('lEye').textContent=g.eye;$('lTitle').textContent=g.title;$('lSub').textContent=g.sub;$('lNum').textContent=g.num}
   $('strip').classList.toggle('on',g.t==='strip');if(g.t==='strip')$('strip').textContent=g.text;
   $('walkout').classList.toggle('on',g.t==='walkout');
+  $('lineup').classList.toggle('on',g.t==='lineup');
   renderClock();
   if(isOverlay){
     const c=BG[isPreview?'transparent':(qs.get('bg')||S.bg)]||'transparent';
