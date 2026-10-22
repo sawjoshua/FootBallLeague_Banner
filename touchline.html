@@ -68,7 +68,7 @@
           <div><label for="homeLineup">Home starting XI</label><textarea id="homeLineup" rows="11" placeholder="1 | Goalkeeper&#10;2 | Defender"></textarea></div>
           <div><label for="awayLineup">Away starting XI</label><textarea id="awayLineup" rows="11" placeholder="1 | Goalkeeper&#10;2 | Defender"></textarea></div>
         </div>
-        <p class="hint">Enter one player per line. Use “shirt number | player name” (for example, “9 | Alex Morgan”); the shirt number is optional.</p>
+        <p class="hint">Enter up to 11 players in formation order: goalkeeper, defenders, then midfield and forward lines. Use “shirt number | player name” (for example, “9 | Alex Morgan”); the shirt number is optional. Choose Home or Away under Graphics → Team to show that team’s pitch.</p>
       </div>
       <div class="section">
         <h3>Output</h3>
@@ -107,17 +107,17 @@
     <div class="wmid"><span>PRE-MATCH</span><strong>TEAM WALKOUT</strong></div>
     <div class="wteam away"><div class="wplayers"><i></i><i></i><i></i><i></i><i></i></div><strong id="wAway"></strong></div>
   </div>
-  <section class="lineup" id="lineup">
-    <header class="lineup-heading"><span>TEAM SHEET</span><strong>STARTING XI</strong></header>
-    <div class="lineup-teams">
-      <article class="lineup-team home">
-        <div class="lineup-team-heading"><span class="lineup-crest" id="lhCrest"></span><div><strong id="lhName"></strong><small id="lhFormation"></small></div></div>
-        <ol id="lhPlayers"></ol>
-      </article>
-      <article class="lineup-team away">
-        <div class="lineup-team-heading"><div><strong id="laName"></strong><small id="laFormation"></small></div><span class="lineup-crest" id="laCrest"></span></div>
-        <ol id="laPlayers"></ol>
-      </article>
+  <section class="lineup" id="lineup" aria-label="Starting lineup">
+    <header class="lineup-heading">
+      <div class="lineup-team-heading"><span class="lineup-crest" id="lineupCrest"></span><div><strong id="lineupName"></strong><small id="lineupFormation"></small></div></div>
+      <strong>STARTING XI</strong>
+    </header>
+    <div class="pitch" id="pitch" role="list" aria-label="Player positions">
+      <div class="pitch-box top"></div><div class="pitch-box bottom"></div>
+      <div class="pitch-six top"></div><div class="pitch-six bottom"></div>
+      <div class="pitch-goal top"></div><div class="pitch-goal bottom"></div>
+      <div class="pitch-center"></div><div class="pitch-spot top"></div><div class="pitch-spot bottom"></div>
+      <div class="pitch-arc top"></div><div class="pitch-arc bottom"></div>
     </div>
   </section>
 </div>
@@ -139,6 +139,11 @@ const elapsed=()=>{const c=S.clock;return c.running?c.base+Math.floor((Date.now(
 const fmt=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
 const minute=()=>(Math.floor(elapsed()/60)+1)+"'";
 
+function formationRows(value){
+  const match=value.match(/^\d+(?:-\d+){1,3}$/);
+  const rows=match?value.split('-').map(Number):[];
+  return rows.length&&rows.every(n=>n>0)&&rows.reduce((a,b)=>a+b,0)===10?rows:[4,3,3];
+}
 function gfx(){
   const team=S.team==='away'?S.away:S.home, num=S.number.trim();
   const who=[team,S.detail.trim()].filter(Boolean).join('  ·  ');
@@ -155,16 +160,48 @@ function gfx(){
   return {};
 }
 function crest(el,logo,short){const k=logo+'|'+short;if(el.dataset.k===k)return;el.dataset.k=k;el.replaceChildren();if(logo){const i=new Image();i.alt='';i.src=logo;el.append(i)}else el.textContent=short}
-function lineupPlayers(el,value){
-  el.replaceChildren();
-  const rows=value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
-  if(!rows.length){const empty=document.createElement('li');empty.className='lineup-empty';empty.textContent='Add players in the controller';el.append(empty);return}
-  rows.forEach(row=>{
+function lineupPlayers(el,value,formation,kit){
+  el.querySelectorAll('.pitch-player').forEach(player=>player.remove());
+  const counts=formationRows(formation);
+  const players=value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).slice(0,11).map((row,index)=>{
     const match=row.match(/^(\d{1,3})\s*(?:[|,.:–—-]\s*|\s+)(.+)$/);
-    const item=document.createElement('li'),number=document.createElement('span'),name=document.createElement('span');
-    number.className='lineup-number';name.className='lineup-player';
-    number.textContent=match?match[1]:'—';name.textContent=match?match[2]:row;
-    item.append(number,name);el.append(item);
+    return {number:match?match[1]:String(index+1),name:match?match[2]:row};
+  });
+  let index=0;
+  [1,...counts].forEach((count,line)=>{
+    for(let slot=0;slot<count;slot++){
+      const player=players[index]||{number:String(index+1),name:'Set in controller'};
+      const marker=document.createElement('div');
+      marker.className='pitch-player';
+      marker.setAttribute('role','listitem');
+      marker.setAttribute('aria-label',player.number+' '+player.name);
+      marker.style.left=((slot+1)/(count+1)*100)+'%';
+      marker.style.top=(92-line*72/counts.length)+'%';
+      const shirt=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      shirt.setAttribute('viewBox','0 0 72 70');
+      shirt.setAttribute('aria-hidden','true');
+      const silhouette=document.createElementNS('http://www.w3.org/2000/svg','path');
+      silhouette.setAttribute('d','M18 10 7 15 1 31 4 38 17 38 19 29 19 62Q36 67 53 62L53 29 56 38 69 38 72 31 65 15 54 10 45 7Q36 15 27 7Z');
+      silhouette.setAttribute('fill','#fff');
+      const torso=document.createElementNS('http://www.w3.org/2000/svg','path');
+      torso.setAttribute('d','M27 8Q36 15 45 8L53 18 53 62Q36 67 19 62L19 18Z');
+      torso.setAttribute('fill',kit);
+      const collar=document.createElementNS('http://www.w3.org/2000/svg','path');
+      collar.setAttribute('d','M27 8Q36 16 45 8');
+      collar.setAttribute('fill','none');
+      collar.setAttribute('stroke','#fff');
+      collar.setAttribute('stroke-width','3');
+      shirt.append(silhouette,torso,collar);
+      const number=document.createElement('span');
+      number.className='pitch-number';
+      number.textContent=player.number;
+      const name=document.createElement('span');
+      name.className='pitch-name';
+      name.textContent=player.name;
+      marker.append(shirt,number,name);
+      el.append(marker);
+      index++;
+    }
   });
 }
 const prevScore={};
@@ -176,11 +213,11 @@ function render(){
   crest($('hCrest'),S.homeLogo,S.homeShort);crest($('aCrest'),S.awayLogo,S.awayShort);
   [['hScore',S.homeScore],['aScore',S.awayScore]].forEach(([id,v])=>{const el=$(id);if(prevScore[id]!==undefined&&prevScore[id]!==v){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}prevScore[id]=v;el.textContent=v});
   $('period').textContent=S.period+(S.added?'  +'+S.added+"'":'');
-  $('lhName').textContent=S.home;$('laName').textContent=S.away;
-  $('lhFormation').textContent=S.homeFormation||'FORMATION';
-  $('laFormation').textContent=S.awayFormation||'FORMATION';
-  crest($('lhCrest'),S.homeLogo,S.homeShort);crest($('laCrest'),S.awayLogo,S.awayShort);
-  lineupPlayers($('lhPlayers'),S.homeLineup);lineupPlayers($('laPlayers'),S.awayLineup);
+  const lineupSide=S.team==='away'?'away':'home';
+  $('lineupName').textContent=S[lineupSide];
+  $('lineupFormation').textContent=formationRows(S[lineupSide+'Formation']).join('-')+' FORMATION';
+  crest($('lineupCrest'),S[lineupSide+'Logo'],S[lineupSide+'Short']);
+  lineupPlayers($('pitch'),S[lineupSide+'Lineup'],S[lineupSide+'Formation'],S[lineupSide+'Kit']);
   $('tag').textContent={goal:'GOAL',yellow:'YELLOW CARD',red:'RED CARD',sub:'SUBSTITUTION'}[S.mode]||{'HALF TIME':'HALF TIME','FULL TIME':'FULL TIME'}[S.period]||'LIVE';
   $('bug').classList.toggle('off',!S.showScore);
   $('lower').className='lower'+(g.t==='lower'?' on '+(g.cls||''):'');
