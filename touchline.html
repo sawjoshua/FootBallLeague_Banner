@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Touchline Studio</title>
+<link rel="stylesheet" href="touchline.css">
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="brand"><div class="mark">T</div><div><h1>Touchline Studio</h1><div class="sub">Football broadcast graphics</div></div></div>
+    <div class="pill" id="conn">Checking server…</div>
+  </header>
+  <div class="layout">
+    <section class="panel">
+      <h2>Match</h2>
+      <div class="fields">
+        <div><label for="home">Home team</label><input id="home" maxlength="26"></div>
+        <div><label for="away">Away team</label><input id="away" maxlength="26"></div>
+        <div><label for="homeShort">Home abbreviation</label><input id="homeShort" maxlength="4"></div>
+        <div><label for="awayShort">Away abbreviation</label><input id="awayShort" maxlength="4"></div>
+        <div><label for="homeLogo">Home logo</label><input id="homeLogo" type="file" accept="image/*"></div>
+        <div><label for="awayLogo">Away logo</label><input id="awayLogo" type="file" accept="image/*"></div>
+        <div><label for="homeKit">Home kit colour</label><input id="homeKit" type="color"></div>
+        <div><label for="awayKit">Away kit colour</label><input id="awayKit" type="color"></div>
+        <div><label for="homeScore">Home score</label><input id="homeScore" type="number" min="0" max="99"></div>
+        <div><label for="awayScore">Away score</label><input id="awayScore" type="number" min="0" max="99"></div>
+        <div><label for="period">Match phase</label><select id="period"><option>1ST HALF</option><option>HALF TIME</option><option>2ND HALF</option><option>EXTRA TIME 1</option><option>EXTRA TIME 2</option><option>PENALTIES</option><option>FULL TIME</option></select></div>
+        <div><label for="added">Added minutes</label><select id="added"><option value="">None</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="hPlus">Home +1</button><button class="secondary" id="hMinus">Home −1</button>
+        <button class="secondary" id="aPlus">Away +1</button><button class="secondary" id="aMinus">Away −1</button>
+      </div>
+      <div class="section">
+        <h3>Clock</h3>
+        <div class="fields">
+          <div><label for="clockIn">Match clock (mm:ss)</label><input id="clockIn" placeholder="00:00"></div>
+          <div><label for="halfLength">Half length</label><select id="halfLength"><option value="45">45 minutes</option><option value="40">40 minutes</option><option value="35">35 minutes</option><option value="30">30 minutes</option></select></div>
+        </div>
+        <div class="actions"><button id="start">Start</button><button class="secondary" id="pause">Pause</button><button class="secondary" id="reset">Reset</button></div>
+        <p class="hint">Edit the clock box to jump to a time. The clock keeps running if you reload this page.</p>
+      </div>
+      <div class="section">
+        <h3>Graphics</h3>
+        <div class="fields">
+          <div><label for="team">Team</label><select id="team"><option value="home">Home</option><option value="away">Away</option></select></div>
+          <div><label for="number">Shirt number (optional)</label><input id="number" maxlength="3"></div>
+          <div><label for="player">Player name (on, for a substitution)</label><input id="player" placeholder="Player name"></div>
+          <div><label for="off">Player off (substitution)</label><input id="off" placeholder="Player name"></div>
+          <div class="full"><label for="detail">Position or detail (optional)</label><input id="detail" placeholder="Forward"></div>
+        </div>
+        <div class="actions">
+          <button data-mode="player">Player ID</button>
+          <button class="gold" id="hGoal">Home goal (+1)</button><button class="gold" id="aGoal">Away goal (+1)</button>
+          <button class="secondary" data-mode="yellow">Yellow card</button><button class="danger" data-mode="red">Red card</button>
+          <button class="secondary" data-mode="sub">Substitution</button><button class="secondary" data-mode="walkout">Team walkout</button>
+          <button class="secondary" data-mode="lineup">Line-up banner</button><button class="secondary" data-mode="half">Half-time</button><button class="secondary" data-mode="full">Full-time</button>
+          <button class="secondary" data-mode="score">Clear graphic</button><button class="secondary" id="toggleScore">Hide scoreboard</button>
+        </div>
+      </div>
+      <div class="section">
+        <h3>Output</h3>
+        <div class="fields">
+          <div><label for="accent">Accent colour</label><select id="accent"><option value="#56c9c1">Cyan</option><option value="#e9bd6e">Gold</option><option value="#63c99e">Green</option><option value="#e76d76">Red</option><option value="#8b9cff">Blue</option></select></div>
+          <div><label for="bg">Overlay background</label><select id="bg"><option value="transparent">Transparent (OBS)</option><option value="green">Chroma green</option><option value="blue">Chroma blue</option><option value="magenta">Magenta</option><option value="black">Black</option></select></div>
+        </div>
+        <div class="actions"><button class="secondary" id="copyUrl">Copy OBS link</button></div>
+        <p class="hint">In OBS add a Browser Source, paste the link, and set it to 1920 × 1080.</p>
+      </div>
+    </section>
+    <section class="panel sticky">
+      <h2>Preview</h2>
+      <div class="pv-wrap" id="pvWrap"><iframe id="pv" src="?overlay=1&preview=1" title="Overlay preview" tabindex="-1"></iframe></div>
+      <p class="hint">The preview is the real overlay page, scaled down, so it matches what OBS shows.</p>
+      <label class="check"><input type="checkbox" id="armed"> Enable keyboard shortcuts</label>
+      <p class="hint">1 scoreboard · 2 player ID · 3 home goal · 4 away goal · 5 half-time · 6 full-time · 7 yellow · 8 red · 9 substitution · 0 clear. Click outside text boxes first.</p>
+    </section>
+  </div>
+</main>
+
+<div id="stage">
+  <div class="bug" id="bug">
+    <div class="teams">
+      <div class="team home"><span class="crest" id="hCrest"></span><span class="tname" id="hName"></span></div>
+      <div class="score"><b id="hScore">0</b><i>–</i><b id="aScore">0</b></div>
+      <div class="team away"><span class="tname" id="aName"></span><span class="crest" id="aCrest"></span></div>
+    </div>
+    <div class="clock"><small id="period"></small><strong id="clock">00:00</strong></div>
+    <div class="tag" id="tag">LIVE</div>
+  </div>
+  <div class="lower" id="lower"><div class="bar"></div><div class="body"><div class="eyebrow" id="lEye"></div><div class="title" id="lTitle"></div><div class="sub" id="lSub"></div></div><div class="num" id="lNum"></div></div>
+  <div class="strip" id="strip"></div>
+  <div class="walkout" id="walkout">
+    <div class="wteam home"><div class="wplayers"><i></i><i></i><i></i><i></i><i></i></div><strong id="wHome"></strong></div>
+    <div class="wmid"><span>PRE-MATCH</span><strong>TEAM WALKOUT</strong></div>
+    <div class="wteam away"><div class="wplayers"><i></i><i></i><i></i><i></i><i></i></div><strong id="wAway"></strong></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const qs=new URLSearchParams(location.search);
+const isOverlay=qs.get('overlay')==='1', isPreview=qs.get('preview')==='1';
+document.documentElement.classList.toggle('overlay',isOverlay);
+const DEF={home:'HOME TEAM',away:'AWAY TEAM',homeShort:'HOM',awayShort:'AWY',homeKit:'#c92f42',awayKit:'#2454a6',homeScore:0,awayScore:0,period:'1ST HALF',added:'',halfLength:45,accent:'#56c9c1',bg:'transparent',team:'home',player:'',number:'',detail:'',off:'',mode:'score',min:"1'",showScore:true,clock:{running:false,base:0,anchor:0},homeLogo:'',awayLogo:'',stamp:0};
+let S=structuredClone(DEF);
+const bc='BroadcastChannel' in window?new BroadcastChannel('touchline'):null;
+const BG={transparent:'transparent',green:'#00b140',blue:'#0047bb',magenta:'#ff00ff',black:'#000000'};
+const FIELDS=['home','away','homeShort','awayShort','homeKit','awayKit','homeScore','awayScore','period','added','halfLength','accent','bg','team','player','number','detail','off'];
+const NUM=['homeScore','awayScore','halfLength'];
+const elapsed=()=>{const c=S.clock;return c.running?c.base+Math.floor((Date.now()-c.anchor)/1000):c.base};
+const fmt=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+const minute=()=>(Math.floor(elapsed()/60)+1)+"'";
+
+function gfx(){
+  const team=S.team==='away'?S.away:S.home, num=S.number.trim();
+  const who=[team,S.detail.trim()].filter(Boolean).join('  ·  ');
+  switch(S.mode){
+    case 'player':return {t:'lower',eye:'PLAYER',title:S.player||'PLAYER NAME',sub:who,num};
+    case 'goal':return {t:'lower',cls:'goal',eye:'GOAL',title:S.player||'GOAL!',sub:team+'  ·  '+S.min,num};
+    case 'yellow':case 'red':return {t:'lower',cls:S.mode,eye:S.mode==='red'?'RED CARD':'YELLOW CARD',title:S.player||'PLAYER NAME',sub:who+'  ·  '+S.min,num};
+    case 'sub':return {t:'lower',cls:'sub',eye:'SUBSTITUTION',title:'▲ '+(S.player||'PLAYER ON'),sub:'▼ '+(S.off||'PLAYER OFF')+'  ·  '+team,num};
+    case 'lineup':return {t:'strip',text:'STARTING XI  ·  '+S.home.toUpperCase()+' VS '+S.away.toUpperCase()};
+    case 'half':return {t:'strip',text:'HALF-TIME  ·  '+S.homeScore+' – '+S.awayScore};
+    case 'full':return {t:'strip',text:'FULL-TIME  ·  '+S.homeScore+' – '+S.awayScore};
+    case 'walkout':return {t:'walkout'};
+  }
+  return {};
+}
+function crest(el,logo,short){const k=logo+'|'+short;if(el.dataset.k===k)return;el.dataset.k=k;el.replaceChildren();if(logo){const i=new Image();i.alt='';i.src=logo;el.append(i)}else el.textContent=short}
+const prevScore={};
+function renderClock(){const t=fmt(elapsed());$('clock').textContent=t;if(!isOverlay&&document.activeElement!==$('clockIn'))$('clockIn').value=t}
+function render(){
+  const st=$('stage'),g=gfx();
+  st.style.setProperty('--accent',S.accent);st.style.setProperty('--home',S.homeKit);st.style.setProperty('--away',S.awayKit);
+  $('hName').textContent=S.home;$('aName').textContent=S.away;$('wHome').textContent=S.home;$('wAway').textContent=S.away;
+  crest($('hCrest'),S.homeLogo,S.homeShort);crest($('aCrest'),S.awayLogo,S.awayShort);
+  [['hScore',S.homeScore],['aScore',S.awayScore]].forEach(([id,v])=>{const el=$(id);if(prevScore[id]!==undefined&&prevScore[id]!==v){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}prevScore[id]=v;el.textContent=v});
+  $('period').textContent=S.period+(S.added?'  +'+S.added+"'":'');
+  $('tag').textContent={goal:'GOAL',yellow:'YELLOW CARD',red:'RED CARD',sub:'SUBSTITUTION'}[S.mode]||{'HALF TIME':'HALF TIME','FULL TIME':'FULL TIME'}[S.period]||'LIVE';
+  $('bug').classList.toggle('off',!S.showScore);
+  $('lower').className='lower'+(g.t==='lower'?' on '+(g.cls||''):'');
+  if(g.t==='lower'){$('lEye').textContent=g.eye;$('lTitle').textContent=g.title;$('lSub').textContent=g.sub;$('lNum').textContent=g.num}
+  $('strip').classList.toggle('on',g.t==='strip');if(g.t==='strip')$('strip').textContent=g.text;
+  $('walkout').classList.toggle('on',g.t==='walkout');
+  renderClock();
+  if(isOverlay){
+    const c=BG[isPreview?'transparent':(qs.get('bg')||S.bg)]||'transparent';
+    document.documentElement.style.setProperty('--stage-bg',c);
+    document.documentElement.classList.toggle('chroma',c!=='transparent');
+  }else{
+    FIELDS.forEach(id=>{if(document.activeElement!==$(id))$(id).value=S[id]});
+    $('toggleScore').textContent=S.showScore?'Hide scoreboard':'Show scoreboard';
+    $('pvWrap').style.background=BG[S.bg]!=='transparent'?BG[S.bg]:'';
+  }
+}
+function apply(d){if(!d||!(d.stamp>S.stamp))return;S=Object.assign(structuredClone(DEF),d);render()}
+setInterval(renderClock,250);
+
+if(isOverlay){
+  if(bc)bc.onmessage=e=>apply(e.data);
+  setInterval(()=>fetch('/api/state',{cache:'no-store'}).then(r=>r.json()).then(apply).catch(()=>{}),300);
+  const fit=()=>{$('stage').style.transform='scale('+Math.min(innerWidth/1920,innerHeight/1080)+')'};
+  addEventListener('resize',fit);fit();render();
+}else{
+  const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),1600)};
+  const conn=ok=>{const p=$('conn');p.textContent=ok?'Server connected':'Server offline – start touchline_server.py';p.classList.toggle('bad',!ok)};
+  function readForm(){
+    FIELDS.forEach(id=>{let v=$(id).value;if(NUM.includes(id))v=Math.max(0,Number(v)||0);if(id==='homeShort'||id==='awayShort')v=v.trim().slice(0,4).toUpperCase();S[id]=v});
+    S.home=S.home.trim()||'HOME TEAM';S.away=S.away.trim()||'AWAY TEAM';S.homeShort=S.homeShort||'HOM';S.awayShort=S.awayShort||'AWY';
+  }
+  function publish(){
+    S.stamp=Date.now();render();if(bc)bc.postMessage(S);
+    fetch('/api/state',{method:'POST',body:JSON.stringify(S)}).then(r=>conn(r.ok)).catch(()=>conn(false));
+  }
+  function onPeriod(){
+    const h=S.halfLength*60,map={'1ST HALF':0,'2ND HALF':h,'EXTRA TIME 1':2*h,'EXTRA TIME 2':2*h+900},c=S.clock;
+    if(S.period in map){c.base=map[S.period];c.anchor=Date.now()}
+    else if(S.period==='HALF TIME'||S.period==='FULL TIME'){c.base=elapsed();c.running=false}
+  }
+  function setMode(m){S.mode=m;S.min=minute();publish()}
+  const lastGoal={};
+  function goal(side){
+    if(Date.now()-(lastGoal[side]||0)<1500){toast('Goal already added');return}
+    lastGoal[side]=Date.now();S[side+'Score']++;S.team=side;S.mode='goal';S.min=minute();publish();toast((side==='home'?'Home':'Away')+' goal on air');
+  }
+  FIELDS.forEach(id=>$(id).addEventListener('input',()=>{readForm();if(id==='period'||id==='halfLength')onPeriod();publish()}));
+  document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+  $('hGoal').onclick=()=>goal('home');$('aGoal').onclick=()=>goal('away');
+  const nudge=(k,d)=>{S[k]=Math.max(0,S[k]+d);publish()};
+  $('hPlus').onclick=()=>nudge('homeScore',1);$('hMinus').onclick=()=>nudge('homeScore',-1);
+  $('aPlus').onclick=()=>nudge('awayScore',1);$('aMinus').onclick=()=>nudge('awayScore',-1);
+  $('toggleScore').onclick=()=>{S.showScore=!S.showScore;publish()};
+  $('start').onclick=()=>{if(!S.clock.running){S.clock.anchor=Date.now();S.clock.running=true;publish();toast('Clock running')}};
+  $('pause').onclick=()=>{S.clock.base=elapsed();S.clock.running=false;publish();toast('Clock paused')};
+  $('reset').onclick=()=>{S.clock={running:false,base:0,anchor:0};publish();toast('Clock reset')};
+  $('clockIn').addEventListener('change',()=>{
+    const p=$('clockIn').value.split(':').map(Number);
+    if(p.length===2&&p.every(Number.isFinite)){S.clock.base=Math.max(0,p[0]*60+p[1]);S.clock.anchor=Date.now();publish()}else toast('Use mm:ss');
+    renderClock();
+  });
+  $('copyUrl').onclick=async()=>{
+    const url=location.origin+'/?overlay=1&bg='+S.bg;
+    try{await navigator.clipboard.writeText(url);toast('OBS link copied')}catch(e){prompt('Copy this link:',url)}
+  };
+  async function logo(side,file){
+    if(!file)return;
+    try{
+      const bmp=await createImageBitmap(file),k=Math.min(1,256/Math.max(bmp.width,bmp.height));
+      const c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+      c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+      const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+      const r=await fetch('/api/logo/'+side,{method:'POST',body:blob});if(!r.ok)throw 0;
+      S[side+'Logo']='/logo/'+side+'?v='+Date.now();publish();toast('Logo loaded');
+    }catch(e){toast('Could not load that image')}
+  }
+  $('homeLogo').onchange=e=>logo('home',e.target.files[0]);
+  $('awayLogo').onchange=e=>logo('away',e.target.files[0]);
+  const KEYS={'1':()=>$('toggleScore').click(),'2':()=>setMode('player'),'3':()=>goal('home'),'4':()=>goal('away'),'5':()=>setMode('half'),'6':()=>setMode('full'),'7':()=>setMode('yellow'),'8':()=>setMode('red'),'9':()=>setMode('sub'),'0':()=>setMode('score')};
+  document.addEventListener('keydown',e=>{
+    const a=document.activeElement;
+    if(!$('armed').checked||e.repeat||e.ctrlKey||e.metaKey||e.altKey||a.tagName==='SELECT'||a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&a.type!=='checkbox'))return;
+    if(KEYS[e.key])KEYS[e.key]();
+  });
+  const fit=()=>{$('pv').style.transform='scale('+$('pvWrap').clientWidth/1920+')'};
+  new ResizeObserver(fit).observe($('pvWrap'));
+  fetch('/api/state',{cache:'no-store'}).then(r=>{conn(r.ok);return r.json()}).then(d=>{if(d)S=Object.assign(structuredClone(DEF),d)}).catch(()=>conn(false)).finally(render);
+}
+})();
+</script>
+</body>
+</html>
